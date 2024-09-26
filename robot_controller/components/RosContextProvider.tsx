@@ -3,8 +3,7 @@ import * as roslib from 'roslib';
 import RosContext from "./RosContext";
 
 const RosContextProvider = ({ children }: { children: React.ReactNode}) => {
-    // const [ros, setRos] = useState<roslib.Ros | null>(null);
-    // setRos(ws_connection);
+    const [isConnected, setIsConnected] = useState<boolean>(false);
 
     const ros: roslib.Ros = new roslib.Ros({
         url: "ws://192.168.1.95:9090",
@@ -13,20 +12,23 @@ const RosContextProvider = ({ children }: { children: React.ReactNode}) => {
     
     // useEffect(() => {
     ros?.on("connection", () => {
+        setIsConnected(true);
         console.log("Connected to ws server ejaitch");
     });
     
     ros?.on("close", () => {
+        setIsConnected(false);
         console.log("Connection to ws server cancelled ejaitch");
     });
     
     ros?.on("error", () => {
+        setIsConnected(false);
         console.log("Error when connecting to ws server ejaitch");
     });
     // }, [ros])
 
     return (
-        <RosContext.Provider value={ros}>
+        <RosContext.Provider value={{ros, isConnected}}>
             {children}
         </RosContext.Provider>
     )
